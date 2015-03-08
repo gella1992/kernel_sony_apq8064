@@ -19,6 +19,8 @@ obj-y		:= elf.o entry-armv.o entry-common.o irq.o opcodes.o \
 		   process.o ptrace.o return_address.o sched_clock.o \
 		   setup.o signal.o stacktrace.o sys_arm.o time.o traps.o
 
+obj-$(CONFIG_ARM_AUTO_HOTPLUG)	+= auto_hotplug.o
+
 obj-$(CONFIG_DEPRECATED_PARAM_STRUCT) += compat.o
 
 obj-$(CONFIG_LEDS)		+= leds.o
@@ -52,6 +54,13 @@ test-kprobes-objs		+= kprobes-test-thumb.o
 else
 test-kprobes-objs		+= kprobes-test-arm.o
 endif
+obj-$(CONFIG_CRASH_NOTES)	+= crash_notes.o
+
+CFLAGS_crash_notes.o		:= \
+	-D"INFO_PRODUCT=\"$(if $(TARGET_PRODUCT),$(TARGET_PRODUCT),unknown)\"" \
+	-D"INFO_VARIANT=\"$(if $(TARGET_BUILD_VARIANT),$(TARGET_BUILD_VARIANT),unknown)\"" \
+	-D"INFO_BUILDID=\"$(if $(BUILD_ID),$(BUILD_ID),unknown)\""
+
 obj-$(CONFIG_ATAGS_PROC)	+= atags.o
 obj-$(CONFIG_OABI_COMPAT)	+= sys_oabi-compat.o
 obj-$(CONFIG_ARM_THUMBEE)	+= thumbee.o
